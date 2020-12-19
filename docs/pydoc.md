@@ -1,21 +1,44 @@
 
-# Module `webdataset.multi`
+# Module `webdataset.iterators`
 
 ```
-Help on module webdataset.multi in webdataset:
+Help on module webdataset.iterators in webdataset:
 
 NAME
-    webdataset.multi
+    webdataset.iterators
+
+DESCRIPTION
+    A collection of iterators implementing useful functionality for
+    transforming datasets in processing pipelines.
+    
+    These functions are plain iterator functions. You can find curried versions
+    in webdataset.filters, and you can find IterableDataset wrappers in
+    webdataset.processing.
+
+DATA
+    __all__ = ['WebDataset', 'tariterator', 'default_handlers', 'imagehand...
+
+FILE
+    /home/tmb/proj/webdataset/webdataset/iterators.py
+
+
+
+```
+
+# Module `webdataset.fluid`
+
+```
+Help on module webdataset.fluid in webdataset:
+
+NAME
+    webdataset.fluid - A fluid interface for constructing datasets.
 
 CLASSES
     torch.utils.data.dataset.IterableDataset(torch.utils.data.dataset.Dataset)
-        MultiDataset(torch.utils.data.dataset.IterableDataset, webdataset.dataset.Pipeline)
-        MultiDatasetIterator
-    webdataset.dataset.Pipeline(builtins.object)
-        MultiDataset(torch.utils.data.dataset.IterableDataset, webdataset.dataset.Pipeline)
+        Dataset
     
-    class MultiDataset(torch.utils.data.dataset.IterableDataset, webdataset.dataset.Pipeline)
-     |  MultiDataset(dataset, workers=4, output_size=10000, nominal=None, pin_memory=True)
+    class Dataset(torch.utils.data.dataset.IterableDataset)
+     |  Dataset(*args, **kwds)
      |  
      |  An iterable Dataset.
      |  
@@ -119,15 +142,17 @@ CLASSES
      |      [3, 4, 5, 6]
      |  
      |  Method resolution order:
-     |      MultiDataset
+     |      Dataset
      |      torch.utils.data.dataset.IterableDataset
      |      torch.utils.data.dataset.Dataset
-     |      webdataset.dataset.Pipeline
+     |      typing.Generic
      |      builtins.object
      |  
      |  Methods defined here:
      |  
-     |  __init__(self, dataset, workers=4, output_size=10000, nominal=None, pin_memory=True)
+     |  __getattr__(self, name)
+     |  
+     |  __init__(self, urls, *, length=True, splitter=<function split_by_worker at 0x7f94427d6ee0>, handler=<function reraise_exception at 0x7f94427d1550>, shuffle=False)
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  __iter__(self)
@@ -135,14 +160,24 @@ CLASSES
      |  __len__(self)
      |  
      |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+     |  __parameters__ = ()
+     |  
+     |  ----------------------------------------------------------------------
      |  Methods inherited from torch.utils.data.dataset.IterableDataset:
      |  
-     |  __add__(self, other)
+     |  __add__(self, other: torch.utils.data.dataset.Dataset[+T_co])
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes inherited from torch.utils.data.dataset.IterableDataset:
+     |  
+     |  __orig_bases__ = (torch.utils.data.dataset.Dataset[+T_co],)
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from torch.utils.data.dataset.Dataset:
      |  
-     |  __getitem__(self, index)
+     |  __getitem__(self, index) -> +T_co
      |  
      |  ----------------------------------------------------------------------
      |  Data descriptors inherited from torch.utils.data.dataset.Dataset:
@@ -154,43 +189,46 @@ CLASSES
      |      list of weak references to the object (if defined)
      |  
      |  ----------------------------------------------------------------------
-     |  Methods inherited from webdataset.dataset.Pipeline:
+     |  Class methods inherited from typing.Generic:
      |  
-     |  batched(self, batchsize, partial=True)
+     |  __class_getitem__(params) from builtins.type
      |  
-     |  decode(self, decoder='rgb', handler=<function reraise_exception at 0x7fd34997a700>)
-     |      Decode the data with the given decoder.
+     |  __init_subclass__(*args, **kwargs) from builtins.type
+     |      This method is called when a class is subclassed.
+     |      
+     |      The default implementation does nothing. It may be
+     |      overridden to extend subclasses.
      |  
-     |  map(self, f, handler=<function reraise_exception at 0x7fd34997a700>)
-     |      Apply function `f` to each sample.
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from typing.Generic:
      |  
-     |  map_dict(self, handler=<function reraise_exception at 0x7fd34997a700>, **kw)
-     |      Transform each sample by applying functions to corresponding fields.
-     |  
-     |  map_tuple(self, *args, handler=<function reraise_exception at 0x7fd34997a700>)
-     |      Apply a list of functions to the tuple.
-     |  
-     |  pipe(self, stage)
-     |      Add a pipline stage (a function taking an iterator and returning another iterator).
-     |  
-     |  rename(self, handler=<function reraise_exception at 0x7fd34997a700>, **kw)
-     |      Rename fields in the sample, dropping all unmatched fields.
-     |  
-     |  reseed_rng(self)
-     |  
-     |  select(self, predicate, **kw)
-     |      Select samples based on a predicate.
-     |  
-     |  shuffle(self, size, rng=None, **kw)
-     |      Shuffle the data.
-     |  
-     |  to_tuple(self, *args, handler=<function reraise_exception at 0x7fd34997a700>)
-     |      Extract fields from the sample in order and yield tuples.
-     |  
-     |  unbatched(self)
+     |  __new__(cls, *args, **kwds)
+     |      Create and return a new object.  See help(type) for accurate signature.
+
+DATA
+    __all__ = ['FluidPipes', 'Dataset']
+
+FILE
+    /home/tmb/proj/webdataset/webdataset/fluid.py
+
+
+
+```
+
+# Module `webdataset.dbcache`
+
+```
+Help on module webdataset.dbcache in webdataset:
+
+NAME
+    webdataset.dbcache
+
+CLASSES
+    torch.utils.data.dataset.IterableDataset(torch.utils.data.dataset.Dataset)
+        DBCache
     
-    class MultiDatasetIterator(torch.utils.data.dataset.IterableDataset)
-     |  MultiDatasetIterator(dataset=None, workers=4, output_size=100, pin_memory=True)
+    class DBCache(torch.utils.data.dataset.IterableDataset)
+     |  DBCache(*args, **kwds)
      |  
      |  An iterable Dataset.
      |  
@@ -294,31 +332,51 @@ CLASSES
      |      [3, 4, 5, 6]
      |  
      |  Method resolution order:
-     |      MultiDatasetIterator
+     |      DBCache
      |      torch.utils.data.dataset.IterableDataset
      |      torch.utils.data.dataset.Dataset
+     |      typing.Generic
      |      builtins.object
      |  
      |  Methods defined here:
      |  
-     |  __init__(self, dataset=None, workers=4, output_size=100, pin_memory=True)
+     |  __call__(self, source)
+     |      Call self as a function.
+     |  
+     |  __init__(self, dbname, size, source=None, shuffle=False, verbose=True)
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  __iter__(self)
      |  
-     |  __next__(self)
+     |  __len__(self)
      |  
-     |  terminate(self)
+     |  dbiter(self)
+     |  
+     |  getmeta(self, key)
+     |  
+     |  key_exists(self, key)
+     |  
+     |  setmeta(self, key, value)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+     |  __parameters__ = ()
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from torch.utils.data.dataset.IterableDataset:
      |  
-     |  __add__(self, other)
+     |  __add__(self, other: torch.utils.data.dataset.Dataset[+T_co])
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes inherited from torch.utils.data.dataset.IterableDataset:
+     |  
+     |  __orig_bases__ = (torch.utils.data.dataset.Dataset[+T_co],)
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from torch.utils.data.dataset.Dataset:
      |  
-     |  __getitem__(self, index)
+     |  __getitem__(self, index) -> +T_co
      |  
      |  ----------------------------------------------------------------------
      |  Data descriptors inherited from torch.utils.data.dataset.Dataset:
@@ -328,22 +386,29 @@ CLASSES
      |  
      |  __weakref__
      |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods inherited from typing.Generic:
+     |  
+     |  __class_getitem__(params) from builtins.type
+     |  
+     |  __init_subclass__(*args, **kwargs) from builtins.type
+     |      This method is called when a class is subclassed.
+     |      
+     |      The default implementation does nothing. It may be
+     |      overridden to extend subclasses.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from typing.Generic:
+     |  
+     |  __new__(cls, *args, **kwds)
+     |      Create and return a new object.  See help(type) for accurate signature.
 
 FUNCTIONS
-    D(*args)
-    
-    copy_and_delete_tensors(sample, pin_memory=True)
-    
-    maybe_copy(a, pin_memory)
-    
-    omp_warning()
-
-DATA
-    timeout = 0.1
-    verbose = 0
+    get_uuid(data)
 
 FILE
-    /home/tmb/proj/webdataset/webdataset/multi.py
+    /home/tmb/proj/webdataset/webdataset/dbcache.py
 
 
 
@@ -387,34 +452,10 @@ DESCRIPTION
     or over HTTP connections.
 
 FUNCTIONS
-    imagehandler(data, imagespec)
-        Decode image data using the given `imagespec`.
-        
-        The `imagespec` specifies whether the image is decoded
-        to numpy/torch/pi, decoded to uint8/float, and decoded
-        to l/rgb/rgba:
-        
-        - l8: numpy uint8 l
-        - rgb8: numpy uint8 rgb
-        - rgba8: numpy uint8 rgba
-        - l: numpy float l
-        - rgb: numpy float rgb
-        - rgba: numpy float rgba
-        - torchl8: torch uint8 l
-        - torchrgb8: torch uint8 rgb
-        - torchrgba8: torch uint8 rgba
-        - torchl: torch float l
-        - torchrgb: torch float rgb
-        - torch: torch float rgb
-        - torchrgba: torch float rgba
-        - pill: pil None l
-        - pil: pil None rgb
-        - pilrgb: pil None rgb
-        - pilrgba: pil None rgba
+    imagehandler(imagespec)
 
 DATA
     __all__ = ['WebDataset', 'tariterator', 'default_handlers', 'imagehand...
-    default_handlers = {'l': {'avi': <webdataset.autodecode.TorchVideoLoad...
 
 FILE
     /home/tmb/proj/webdataset/webdataset/autodecode.py
@@ -423,24 +464,45 @@ FILE
 
 ```
 
+# Module `webdataset.utils`
+
+```
+Help on module webdataset.utils in webdataset:
+
+NAME
+    webdataset.utils
+
+FUNCTIONS
+    add_hook(fs, f)
+    
+    call_hook(fs, *args, **kw)
+    
+    ignore_and_continue(exn)
+        Called in an exception handler to ignore any exception and continue.
+    
+    ignore_and_stop(exn)
+        Called in an exception handler to ignore any exception and stop further processing.
+    
+    reraise_exception(exn)
+        Called in an exception handler to re-raise the exception.
+    
+    warn_and_stop(exn)
+        Called in an exception handler to ignore any exception and stop further processing.
+
+DATA
+    __all__ = ['reraise_exception', 'ignore_and_continue', 'ignore_and_sto...
+
+FILE
+    /home/tmb/proj/webdataset/webdataset/utils.py
+
+
+
+```
+
 # Module `webdataset.filters`
 
 ```
-Help on module webdataset.filters in webdataset:
-
-NAME
-    webdataset.filters
-
-DESCRIPTION
-    Train PyTorch models directly from POSIX tar archive, locally
-    or over HTTP connections.
-
-DATA
-    __all__ = ['WebDataset', 'tariterator', 'default_handlers', 'imagehand...
-
-FILE
-    /home/tmb/proj/webdataset/webdataset/filters.py
-
+problem in webdataset.filters - AttributeError: module 'webdataset.iterators' has no attribute 'map_stream'
 
 
 ```
@@ -457,118 +519,9 @@ DESCRIPTION
     Train PyTorch models directly from POSIX tar archive, locally
     or over HTTP connections.
 
-CLASSES
-    torch.utils.data.dataset.IterableDataset(torch.utils.data.dataset.Dataset)
-        Dataset(torch.utils.data.dataset.IterableDataset, SampleIterator)
-    SampleIterator(Pipeline)
-        Dataset(torch.utils.data.dataset.IterableDataset, SampleIterator)
-    
-    class Dataset(torch.utils.data.dataset.IterableDataset, SampleIterator)
-     |  Dataset(urls, *, length=None, open_fn=<function reader at 0x7f9fd898a550>, handler=<function reraise_exception at 0x7f9facbfc700>, tarhandler=None, prepare_for_worker=True, initial_pipeline=None, shard_selection=<function worker_urls at 0x7f9fd898b820>)
-     |  
-     |  Iterate over sharded datasets.
-     |  
-     |  This class combines several function: it is a container for a list of
-     |  shards, it is a container for a processing pipelines, and it handles
-     |  some bookkeeping related to DataLoader.
-     |  
-     |  Method resolution order:
-     |      Dataset
-     |      torch.utils.data.dataset.IterableDataset
-     |      torch.utils.data.dataset.Dataset
-     |      SampleIterator
-     |      Pipeline
-     |      builtins.object
-     |  
-     |  Methods defined here:
-     |  
-     |  __init__(self, urls, *, length=None, open_fn=<function reader at 0x7f9fd898a550>, handler=<function reraise_exception at 0x7f9facbfc700>, tarhandler=None, prepare_for_worker=True, initial_pipeline=None, shard_selection=<function worker_urls at 0x7f9fd898b820>)
-     |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
-     |  __iter__(self)
-     |  
-     |  __len__(self)
-     |      Return the nominal length of the dataset.
-     |  
-     |  shard_fn(self)
-     |  
-     |  ----------------------------------------------------------------------
-     |  Methods inherited from torch.utils.data.dataset.IterableDataset:
-     |  
-     |  __add__(self, other)
-     |  
-     |  ----------------------------------------------------------------------
-     |  Methods inherited from torch.utils.data.dataset.Dataset:
-     |  
-     |  __getitem__(self, index)
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data descriptors inherited from torch.utils.data.dataset.Dataset:
-     |  
-     |  __dict__
-     |      dictionary for instance variables (if defined)
-     |  
-     |  __weakref__
-     |      list of weak references to the object (if defined)
-     |  
-     |  ----------------------------------------------------------------------
-     |  Methods inherited from SampleIterator:
-     |  
-     |  raw_samples(self, urls)
-     |  
-     |  samples(self, urls)
-     |  
-     |  ----------------------------------------------------------------------
-     |  Methods inherited from Pipeline:
-     |  
-     |  batched(self, batchsize, partial=True)
-     |  
-     |  decode(self, decoder='rgb', handler=<function reraise_exception at 0x7f9facbfc700>)
-     |      Decode the data with the given decoder.
-     |  
-     |  map(self, f, handler=<function reraise_exception at 0x7f9facbfc700>)
-     |      Apply function `f` to each sample.
-     |  
-     |  map_dict(self, handler=<function reraise_exception at 0x7f9facbfc700>, **kw)
-     |      Transform each sample by applying functions to corresponding fields.
-     |  
-     |  map_tuple(self, *args, handler=<function reraise_exception at 0x7f9facbfc700>)
-     |      Apply a list of functions to the tuple.
-     |  
-     |  pipe(self, stage)
-     |      Add a pipline stage (a function taking an iterator and returning another iterator).
-     |  
-     |  rename(self, handler=<function reraise_exception at 0x7f9facbfc700>, **kw)
-     |      Rename fields in the sample, dropping all unmatched fields.
-     |  
-     |  reseed_rng(self)
-     |  
-     |  select(self, predicate, **kw)
-     |      Select samples based on a predicate.
-     |  
-     |  shuffle(self, size, rng=None, **kw)
-     |      Shuffle the data.
-     |  
-     |  to_tuple(self, *args, handler=<function reraise_exception at 0x7f9facbfc700>)
-     |      Extract fields from the sample in order and yield tuples.
-     |  
-     |  unbatched(self)
-
 FUNCTIONS
-    ignore_and_continue(exn)
-        Called in an exception handler to ignore any exception and continue.
-    
-    ignore_and_stop(exn)
-        Called in an exception handler to ignore any exception and stop further processing.
-    
     reraise_exception(exn)
         Called in an exception handler to re-raise the exception.
-    
-    warn_and_continue(exn)
-        Called in an exception handler to ignore any exception, isssue a warning, and continue.
-    
-    warn_and_stop(exn)
-        Called in an exception handler to ignore any exception and stop further processing.
 
 DATA
     __all__ = ['Dataset', 'tariterator', 'default_handlers', 'imagehandler...
@@ -593,10 +546,36 @@ FUNCTIONS
 
 DATA
     __all__ = ['gopen', 'gopen_schemes']
-    gopen_schemes = {'__default__': <function gopen_objectio>, 'ftps': <fu...
+    gopen_schemes = {'__default__': <function gopen_error>, 'ftps': <funct...
 
 FILE
     /home/tmb/proj/webdataset/webdataset/gopen.py
+
+
+
+```
+
+# Module `webdataset.tariterators`
+
+```
+Help on module webdataset.tariterators in webdataset:
+
+NAME
+    webdataset.tariterators
+
+DESCRIPTION
+    Train PyTorch models directly from POSIX tar archive, locally
+    or over HTTP connections.
+
+FUNCTIONS
+    reraise_exception(exn)
+        Called in an exception handler to re-raise the exception.
+
+DATA
+    __all__ = ['Dataset', 'tariterator', 'default_handlers', 'imagehandler...
+
+FILE
+    /home/tmb/proj/webdataset/webdataset/tariterators.py
 
 
 
@@ -723,6 +702,46 @@ FILE
 
 ```
 
+# Module `webdataset.bench`
+
+```
+Help on module webdataset.bench in webdataset:
+
+NAME
+    webdataset.bench
+
+CLASSES
+    builtins.object
+        TotalSize
+    
+    class TotalSize(builtins.object)
+     |  Methods defined here:
+     |  
+     |  __call__(self, sample)
+     |      Call self as a function.
+     |  
+     |  __init__(self)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __dict__
+     |      dictionary for instance variables (if defined)
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+
+FUNCTIONS
+    main(args)
+
+FILE
+    /home/tmb/proj/webdataset/webdataset/bench.py
+
+
+
+```
+
 # Module `webdataset.writer`
 
 ```
@@ -841,6 +860,175 @@ DATA
 
 FILE
     /home/tmb/proj/webdataset/webdataset/writer.py
+
+
+
+```
+
+# Module `webdataset.shardcache`
+
+```
+Help on module webdataset.shardcache in webdataset:
+
+NAME
+    webdataset.shardcache
+
+CLASSES
+    io.RawIOBase(_io._RawIOBase, io.IOBase)
+        CacheStream
+    
+    class CacheStream(io.RawIOBase)
+     |  CacheStream(fname, stream, verbose=False)
+     |  
+     |  Base class for raw binary I/O.
+     |  
+     |  Method resolution order:
+     |      CacheStream
+     |      io.RawIOBase
+     |      _io._RawIOBase
+     |      io.IOBase
+     |      _io._IOBase
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self, fname, stream, verbose=False)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  close(self, complete=False)
+     |      Flush and close the IO object.
+     |      
+     |      This method has no effect if the file is already closed.
+     |  
+     |  read(self, n)
+     |  
+     |  readinto(self, b)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+     |  __abstractmethods__ = frozenset()
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from _io._RawIOBase:
+     |  
+     |  readall(self, /)
+     |      Read until EOF, using multiple read() call.
+     |  
+     |  write(...)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from _io._IOBase:
+     |  
+     |  __del__(...)
+     |  
+     |  __enter__(...)
+     |  
+     |  __exit__(...)
+     |  
+     |  __iter__(self, /)
+     |      Implement iter(self).
+     |  
+     |  __next__(self, /)
+     |      Implement next(self).
+     |  
+     |  fileno(self, /)
+     |      Returns underlying file descriptor if one exists.
+     |      
+     |      OSError is raised if the IO object does not use a file descriptor.
+     |  
+     |  flush(self, /)
+     |      Flush write buffers, if applicable.
+     |      
+     |      This is not implemented for read-only and non-blocking streams.
+     |  
+     |  isatty(self, /)
+     |      Return whether this is an 'interactive' stream.
+     |      
+     |      Return False if it can't be determined.
+     |  
+     |  readable(self, /)
+     |      Return whether object was opened for reading.
+     |      
+     |      If False, read() will raise OSError.
+     |  
+     |  readline(self, size=-1, /)
+     |      Read and return a line from the stream.
+     |      
+     |      If size is specified, at most size bytes will be read.
+     |      
+     |      The line terminator is always b'\n' for binary files; for text
+     |      files, the newlines argument to open can be used to select the line
+     |      terminator(s) recognized.
+     |  
+     |  readlines(self, hint=-1, /)
+     |      Return a list of lines from the stream.
+     |      
+     |      hint can be specified to control the number of lines read: no more
+     |      lines will be read if the total size (in bytes/characters) of all
+     |      lines so far exceeds hint.
+     |  
+     |  seek(...)
+     |      Change stream position.
+     |      
+     |      Change the stream position to the given byte offset. The offset is
+     |      interpreted relative to the position indicated by whence.  Values
+     |      for whence are:
+     |      
+     |      * 0 -- start of stream (the default); offset should be zero or positive
+     |      * 1 -- current stream position; offset may be negative
+     |      * 2 -- end of stream; offset is usually negative
+     |      
+     |      Return the new absolute position.
+     |  
+     |  seekable(self, /)
+     |      Return whether object supports random access.
+     |      
+     |      If False, seek(), tell() and truncate() will raise OSError.
+     |      This method may need to do a test seek().
+     |  
+     |  tell(self, /)
+     |      Return current stream position.
+     |  
+     |  truncate(...)
+     |      Truncate file to size bytes.
+     |      
+     |      File pointer is left unchanged.  Size defaults to the current IO
+     |      position as reported by tell().  Returns the new size.
+     |  
+     |  writable(self, /)
+     |      Return whether object was opened for writing.
+     |      
+     |      If False, write() will raise OSError.
+     |  
+     |  writelines(self, lines, /)
+     |      Write a list of lines to stream.
+     |      
+     |      Line separators are not added, so it is usual for each of the
+     |      lines provided to have a line separator at the end.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from _io._IOBase:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from _io._IOBase:
+     |  
+     |  __dict__
+     |  
+     |  closed
+
+FUNCTIONS
+    cache_shards(urls, cache_dir='./data', cache_size=1000000000000000.0, cache_name=<function guess_shard at 0x7f8bf2a660d0>, verbose=False)
+    
+    guess_shard(path)
+    
+    shard_uuid(path)
+
+FILE
+    /home/tmb/proj/webdataset/webdataset/shardcache.py
 
 
 
