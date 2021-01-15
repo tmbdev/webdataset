@@ -17,6 +17,7 @@ reraise_exception ignore_and_continue warn_and_continue ignore_and_stop warn_and
 import os
 import random
 import warnings
+import itertools as itt
 
 import braceexpand
 from torch.utils.data import IterableDataset
@@ -175,6 +176,9 @@ class Shorthands:
 
     def dbcache(self, fname, size):
         return self.compose(dbcache.DBCache, fname, size)
+
+    def slice(self, *args):
+        return self.pipe(itt.islice, *args)
 
 
 class Processor(IterableDataset, Composable, Shorthands):
