@@ -94,7 +94,7 @@ class ShardList(IterableDataset, Composable):
     def __init__(
         self,
         urls,
-        shuffle=False,
+        shuffle=lambda x: None,
         nodesplitter=None,
         splitter=split_by_worker,
         length=None,
@@ -117,7 +117,9 @@ class ShardList(IterableDataset, Composable):
             urls = list(self.nodesplitter(urls))
         if self.splitter is not None:
             urls = list(self.splitter(urls))
-        if self.shuffle:
+        if callable(self.shuffle):
+            self.shuffle(urls)
+        elif self.shuffle:
             random.shuffle(urls)
         for url in urls:
             yield dict(url=url)
